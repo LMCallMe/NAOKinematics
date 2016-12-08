@@ -520,6 +520,15 @@ NAOKinematics::AngleContainer NAOKinematics::inverseLeftHand(const FKvars s)
 {
 	return inverseLeftHand(getTransformation(s));
 }
+void NAOKinematics::printT(kmatTable Tf)
+{
+  for(int j=0; j<3; j++){
+    for(int i=0; i<4; i++){
+      std::cout << Tf(j,i)<< " ";
+    }
+    std::cout << "\n" << std::endl;
+  }
+}
 
 NAOKinematics::AngleContainer NAOKinematics::inverseLeftHand(kmatTable targetPoint)
 {
@@ -527,34 +536,50 @@ NAOKinematics::AngleContainer NAOKinematics::inverseLeftHand(kmatTable targetPoi
 	std::vector<std::vector<float> > returnResult;
 	double theta1, theta2, theta3, theta4, theta5;
 	Tinit = targetPoint;
-	Tinit.fast_invert();
-	Temp = T[FR_END_T+CHAIN_L_ARM];
-	Temp*=Tinit;
-	Temp*=T[FR_BASE_T+CHAIN_L_ARM];
+	std::cout<<"T_end:"<<std::endl;
+	printT(Tinit);
+	Tinit.fast_invert();// (T_end)^-1
+	std::cout<<"(T_end)^-1:"<<std::endl;
+	printT(Tinit);
+	Temp = T[FR_END_T+CHAIN_L_ARM];// T_tool
+	std::cout<<"T_tool:"<<std::endl;
+	printT(Temp);
+	Temp*=Tinit; // T_tool*(T_end)^-1
+	std::cout<<"T_tool*(T_end)^-1:"<<std::endl;
+	printT(Temp);
+	Temp*=T[FR_BASE_T+CHAIN_L_ARM];//T_tool*(T_end)^-1*(T_base)
+	std::cout<<"T_tool*(T_end)^-1*(T_base):"<<std::endl;
+	printT(Temp);
 	try
 	{
-		Temp.fast_invert();
+		Temp.fast_invert();// (T_tool*(T_end)^-1*(T_base))^-1 --> T
+    std::cout<<"(T_tool*(T_end)^-1*(T_base))^-1:"<<std::endl;
+    printT(Temp);
 	}
 	catch(KMath::KMat::SingularMatrixInvertionException d)
 	{
 		return returnResult;
 	}
+    //---------- theta1 
 	theta1 = atan2(-Temp(2,3),Temp(0,3));
+	std::cout<< "Temp(2,3): " << Temp(2,3) << std::endl;
+	std::cout<< "Temp(0,3): " << Temp(0,3) << std::endl;
+	std::cout<< "theta1: " << theta1 << std::endl;
 	if(theta1 > LShoulderPitchHigh || theta1 < LShoulderPitchLow)
 		return returnResult;
 	
 	KMatTransf::makeDHTransformation(T1, 0.0, -PI_2, 0.0,  theta1);
 	try
 	{
-		T1.fast_invert();
+		T1.fast_invert();// T1^-1
 	}
 	catch(KMath::KMat::SingularMatrixInvertionException d)
 	{
 		return returnResult;
 	}
-	T1 *= Temp;
-	Temp = T1;
-	
+	T1 *= Temp; // T1^-1*T
+	Temp = T1; // T1^-1*T
+	//--------- theta2
 	double top, bottom;
 	top = Temp(0,3)*ElbowOffsetY/UpperArmLength -Temp(2,3);
 	bottom = ElbowOffsetY*ElbowOffsetY/UpperArmLength + UpperArmLength;
@@ -572,25 +597,28 @@ NAOKinematics::AngleContainer NAOKinematics::inverseLeftHand(kmatTable targetPoi
 		KMatTransf::makeDHTransformation(T2, 0.0, PI_2, 0.0, theta2 + PI_2);
 		try
 		{
-			T2.fast_invert();
+			T2.fast_invert();// T2^-1
 		}
 		catch(KMath::KMat::SingularMatrixInvertionException d)
 		{
 			return returnResult;
 		}
-		T2*=Temp;
+		T2*=Temp; // T2^-1*T1^-1*T
+        //-------- theta3
 		theta3 = atan2(-T2(2,2),-T2(0,2));
 		KMatTransf::makeDHTransformation(T3, +ElbowOffsetY, PI_2, UpperArmLength, theta3);
 		try
 		{
-			T3.fast_invert();
+			T3.fast_invert(); // T3^-1
 		}
 		catch(KMath::KMat::SingularMatrixInvertionException d)
 		{
 			return returnResult;
 		}
-		T3*=T2;
+		T3*=T2;// T3^-1*T2^-1*T1^-1*T
+        //-------- theta4
 		theta4 = atan2(T3(0,2),T3(2,2));
+        //-------- theta5
 		theta5 = atan2(T3(1,0),T3(1,1));
 		//---------------------------Forward validation step--------------------------------------------------------------------------------------
 		joints[L_ARM+SHOULDER_PITCH]=theta1;

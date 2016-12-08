@@ -14,11 +14,11 @@ int main(){
 	std::vector<float> joints(NUMOFJOINTS);
 	double pi = KMath::KMat::transformations::PI;
 	//Left Hand
-	joints[L_ARM+SHOULDER_PITCH]=0.2;
-	joints[L_ARM+SHOULDER_ROLL]=0.1;
-	joints[L_ARM+ELBOW_YAW]=0;
-	joints[L_ARM+ELBOW_ROLL]=0;
-	joints[L_ARM+WRIST_YAW]=0.0;
+	joints[L_ARM+SHOULDER_PITCH]=0.78600853;
+	joints[L_ARM+SHOULDER_ROLL]=0.046680994;
+	joints[L_ARM+ELBOW_YAW]=-1.1783889;
+	joints[L_ARM+ELBOW_ROLL]=-0.8350456;
+	joints[L_ARM+WRIST_YAW]=-0.2997821;
 	//Right Hand
 	joints[R_ARM+SHOULDER_PITCH]=M_PI_2;
 	joints[R_ARM+SHOULDER_ROLL]=-M_PI_4;
@@ -47,7 +47,8 @@ int main(){
 	nkin.setJoints(joints);
 	
 	output1= nkin.getForwardEffector((NAOKinematics::Effectors)CHAIN_L_ARM);
-	
+	std::cout << "ForwardLArm:" << std::endl;
+  nkin.printT(output1);
 	//Right Hand
 	output2 = nkin.getForwardEffector((NAOKinematics::Effectors)CHAIN_R_ARM);
 	
@@ -60,6 +61,7 @@ int main(){
 	//Camera
 	output5 = nkin.getForwardEffector(NAOKinematics::EFF_CAMERA_BOT);
 	
+  
 	std::cout << "x = " << output1(0,3) << " y = " << output1(1,3) << " z = " << output1(2,3) <<  std::endl;
 	std::cout << "x = " << output2(0,3) << " y = " << output2(1,3) << " z = " << output2(2,3) <<  std::endl;
 	std::cout << "x = " << output3(0,3) << " y = " << output3(1,3) << " z = " << output3(2,3) <<  std::endl;
@@ -70,7 +72,7 @@ int main(){
 
 	result = nkin.inverseLeftHand(output1);
 	if(!result.empty()){
-		cout << "--Solution exists 1" << endl;
+		cout << "inverseLArm:--Solution exists 1" << endl;
 		for(int j=0; j<result[0].size(); j++){
 			cout << "angle" << j << " = " << result[0][j] << " ";
 		}

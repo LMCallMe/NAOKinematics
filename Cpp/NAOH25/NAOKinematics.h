@@ -189,6 +189,11 @@ public:
 	AngleContainer jacobianInverseRightLeg(const FKvars s);
 	AngleContainer jacobianInverseRightLeg(kmatTable targetPoint);
 	
+  /**
+  * print Tf elements
+   * */
+  void printT(kmatTable Tf);
+  
 private:
 	//Jacobian Inverse Kinematics
 	AngleContainer jacobianInverseHead(kmatTable targetPoint, KDeviceLists::ChainsNames ch, bool topCamera);
