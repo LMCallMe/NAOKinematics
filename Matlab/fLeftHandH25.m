@@ -10,11 +10,11 @@ base = eye(4,4);
 base(2,4) = shoulderOffsetY;
 base(3,4) = shoulderOffsetZ;
 
-elboff = 15;
+%elboff = 15;
 
 T1 = DH(0,-pi/2,0,thetas(1));
 T2 = DH(0,pi/2,0,thetas(2)+pi/2);
-T3 = DH(elboff,pi/2,upperArmLength,thetas(3));
+T3 = DH(elbowOffsetY,pi/2,upperArmLength,thetas(3));
 T4 = DH(0,-pi/2,0,thetas(4));
 %% THIS is the correct but the other is equivelant
 %T5 = T(0,pi/2,LowerArmLength,thetas(5));

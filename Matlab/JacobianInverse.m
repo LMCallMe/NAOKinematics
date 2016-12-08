@@ -30,7 +30,7 @@ while((quality>TOL && ITER<=MAXITER)|| ITER==0)
 	quality
 	
 
-	#alpha=0.2
+	%alpha=0.2
 	%Target
 	%T1
 	e=(Target-T).*Mask;

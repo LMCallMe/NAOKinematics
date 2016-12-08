@@ -75,12 +75,12 @@ thetasRL(4) = 0.3;%+0.00000000000001;%pi/2;
 thetasRL(5) = 0.4;
 thetasRL(6) = 0.5;
 [T v v]=fRightLeg(thetasRL);
-T(3,4)+=1;
-r=JacobianInverse(T,@fRightLeg,zeros(6,1));%thetasRL'+2*pi+randn(6,1)*0.001);
-fRightLeg(thetasRL)*fRightLeg(r)^-1
-r-thetasRL'
+%T(3,4)=T(3,4)+1;
+%r=JacobianInverse(T,@fRightLeg,zeros(6,1));%thetasRL'+2*pi+randn(6,1)*0.001);
+%fRightLeg(thetasRL)*fRightLeg(r)^-1
+%r-thetasRL'
 
-pause
+%pause
 disp('-----Camera---------')
 %thetasC(1) = 0;
 %thetasC(2) = pi/2;
